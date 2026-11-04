@@ -40,7 +40,7 @@ disp(C2);
 w1 = sum(C1, 2);
 w2 = sum(C2, 2);
 
-% compute weight multiplicities A_i for i = 0..n
+% compute weight multiplicities A_i for i = 0, ..., n
 % the i-th element corresponds to weight i => A is indexed with the weight
 A1 = zeros(1, n + 1); % preallocation
 A2 = zeros(1, n + 1);
