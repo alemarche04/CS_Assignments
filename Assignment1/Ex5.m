@@ -14,7 +14,7 @@ t = 1; % error correction capability
 HT = H';
 
 %% word error probability
-p = logspace(-5, -1, 100);
+p = logspace(-5, -0.5, 100);
 P_c = zeros(size(p)); % probability of correct decoding
 
 for i = 0:t
@@ -31,7 +31,7 @@ xlabel('$p$', 'Interpreter','latex')
 ylabel('$P_w(E)$', 'Interpreter','latex')
 % title('Word error probability');
 axis tight
-set(gca, "FontSize", 20)
+set(gca, "FontSize", 22)
 
 
 %% bounded-distance syndrome decoder
@@ -57,10 +57,10 @@ p_vec = logspace(-2, -0.5, 10); % range of channel bit error probabilities p
 P_w_analytical = zeros(size(p_vec));
 
 for idx = 1:length(p_vec)
-    p = p_vec(idx);
+    p_val = p_vec(idx);
     P_correct = 0;
     for i = 0:t
-        P_correct = P_correct + nchoosek(n, i) * (p^i) * ((1 - p)^(n - i));
+        P_correct = P_correct + nchoosek(n, i) * (p_val^i) * ((1 - p_val)^(n - i));
     end
     P_w_analytical(idx) = 1 - P_correct;
 end
@@ -75,7 +75,7 @@ CI_low1     = zeros(1, length(p_vec));
 CI_high1    = zeros(1, length(p_vec));
 
 for j = 1:length(p_vec)
-    p = p_vec(j);
+    p_val = p_vec(j);
     word_errors = 0;
     N_WE = 0; N_trans = 0;
     while N_WE < target_errors
@@ -83,7 +83,7 @@ for j = 1:length(p_vec)
         c_tx = zeros(1, n); 
 
         % BSC Channel Noise: bit flips with probability p
-        e_channel = rand(1, n) < p;
+        e_channel = rand(1, n) < p_val;
         y = mod(c_tx + e_channel, 2); % Received vector y = c + e
 
         % Bounded-Distance Syndrome Decoder
@@ -111,21 +111,22 @@ for j = 1:length(p_vec)
 
     P_w_sim(j) = N_WE / N_trans;
 
-    r = N_WE; f = N_trans - N_WE;
-    CI_low1(j)  = betainv(alpha/2, r, f+1);
-    CI_high1(j) = betainv(1-alpha/2, r+1, f);
+    % r = N_WE; f = N_trans - N_WE;
+    % CI_low1(j)  = betainv(alpha/2, r, f+1);
+    % CI_high1(j) = betainv(1-alpha/2, r+1, f);
 end
 
 % plotting & Performance Comparison
 figure;
-loglog(p_vec, P_w_analytical, 'b-', 'LineWidth', 2);
+loglog(p, P_w, 'b-', 'LineWidth', 2);
 hold on
-errorbar(p_vec, P_w_sim, P_w_sim - CI_low1, CI_high1 - P_w_sim, '-ro', ...
-    'LineWidth', 1.5, 'MarkerSize', 8, 'MarkerFaceColor', 'r');
+% errorbar(p_vec, P_w_sim, P_w_sim - CI_low1, CI_high1 - P_w_sim, '-ro', ...
+%     'LineWidth', 1.5, 'MarkerSize', 8, 'MarkerFaceColor', 'r');
+plot(p_vec, P_w_sim, 'r-o','LineWidth', 1.5, 'MarkerSize', 8, 'MarkerFaceColor', 'r')
 hold off
 grid on; axis tight;
 xlabel('BSC crossover probability p', 'Interpreter', 'latex');
 ylabel('$P_w(E)$', 'Interpreter', 'latex');
 %title('Hamming (63,57) Syndrome Decoding Performance');
 legend('Analytical $P_w(E)$', 'Monte Carlo (100 word errors)', 'Interpreter', 'latex', 'Location', 'southeast');
-set(gca, 'FontSize', 18);
+set(gca, 'FontSize', 22);

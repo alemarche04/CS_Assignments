@@ -1,0 +1,33 @@
+clc
+clear
+close all
+
+%%
+% choose a primitive polynomial
+primitivePolynomial = [10 9 4 1 0];
+
+% choose a random seed
+initialConditions = [1 1 1 0 0 0 1 0 1 0];
+
+L   = 10; % number of cells
+Nb  = 2^L-1; % m-sequence length
+
+% sequence of pseudorandom binary numbers using a LFSR
+pnSequence = comm.PNSequence('Polynomial', primitivePolynomial, ...
+'SamplesPerFrame',Nb,'InitialConditions', initialConditions);
+
+x1 = pnSequence()'; % binary m-sequence
+
+% generate the bipolar sequence of x1
+x1_ = 2.*x1 - 1;
+
+% plot the first 20 bits of the bipolar sequence
+figure
+% stem(0:19, x1_(1:20), 'filled')
+stairs(0:20, x1_(1:21), LineWidth=1.5)
+grid on; 
+ylim([-2 2]); yticks([-1 0 1]); yticklabels([-1 0 1])
+xticks(0:20); xticklabels(0:20)
+set(gca, fontsize = 18)
+
+%%
