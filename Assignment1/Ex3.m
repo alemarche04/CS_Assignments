@@ -2,7 +2,11 @@ clc
 close all
 clear
 
-%% 3b.2
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 3b: Codewords and information vectors generation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 n = 6; k = 3; r = n - k;
 
 % A non-systematic generator matrix is a generator matrix kxn G for a 
@@ -24,7 +28,11 @@ C = mod(V * G, 2);
 % all possible received vectors
 Y = dec2bin(0:2^n-1) - '0';
 
-%% 3b.5
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 3b: Determine the decision regions for all the codewords
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % decision regions
 D_c = cell(size(C, 1), 1);
 
@@ -59,9 +67,12 @@ for i = 1:size(C, 1)
 end
 
 
-%% 3b.6
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 3b: Verification D(c) = c + D(0)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % find the all-zero codeword index
-zero_idx = find(all(C == 0, 2));
+zero_idx = all(C == 0, 2);
 D_zero = D_c{zero_idx};
 
 verified = true; % initialization
@@ -92,7 +103,11 @@ else
     fprintf('\nVerification FAILED for some codewords.\n');
 end
 
-%% 3c.1
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 3c: Definition of code C(4, 2)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 n = 4; k = 2; r = n - k;
 
 % define nonlinear code C
@@ -104,7 +119,11 @@ C = [   0, 0, 0, 0;
 % all possible received vectors
 Y = dec2bin(0:2^n-1) - '0';
 
-%% 3c.3
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 3c: Determine the decision regions for all the codewords
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % decision regions
 D_c = cell(size(C, 1), 1);
 
@@ -139,7 +158,10 @@ for i = 1:size(C, 1)
 end
 
 
-%% 3c.4
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 3c: Verification D(c) = c + D(0)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % find the all-zero codeword index
 zero_idx = find(all(C == 0, 2));
 D_zero = D_c{zero_idx};

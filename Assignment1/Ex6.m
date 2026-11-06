@@ -2,7 +2,11 @@ clc
 clear
 close all
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Property of m-sequences
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % choose a primitive polynomial
 primitivePolynomial = [10 9 4 1 0];
 
@@ -21,7 +25,11 @@ x1 = pnSequence()'; % binary m-sequence
 % generate the bipolar sequence of x1
 x1_ = 2.*x1 - 1;
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Sequence
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % plot the first 20 bits of the bipolar sequence
 figure
 % stem(0:19, x1_(1:20), 'filled')
@@ -31,7 +39,10 @@ ylim([-2 2]); yticks([-1 0 1]); yticklabels([-1 0 1])
 xticks(0:20); xticklabels(0:20)
 set(gca, fontsize = 18)
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Number of 0/1, number of transitions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 N1 = sum(x1);
 N0 = sum(x1==0);
 
@@ -47,7 +58,10 @@ sequenceStatistics = table(N0, N1, NT, NNT, ...
     'NT', 'NNT'});
 disp(sequenceStatistics)
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Runs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Count runs of consecutive equal symbols, including the periodic boundary
 N       = length(x1);
 x1_per  = [x1 x1(1)];
@@ -131,7 +145,10 @@ set(gca, fontsize=18)
 hold off;
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Autocorrelation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 R   = ifft(fft(x1_).*conj(fft(x1_))); % non-normalized periodic autocorr.
 R   = fftshift(R);
 
@@ -147,7 +164,9 @@ ylim([-50 1100]);
 set(gca, fontsize=18)
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Truncated sequences: Maximum Peak Side Lobe (MPSL)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 z_values = 1:200;
 
@@ -174,10 +193,12 @@ end
 
 % plot MPSL vs z
 figure;
-plot(z_values,MPSL,'LineWidth',1.5);
+plot(z_values,MPSL, '.-', 'LineWidth', 1.2, 'MarkerSize', 15);
 xlabel('z');
 ylabel('MPSL(z)');
 grid on; axis tight;
+ylim([29 37]);
+xticks([1 20:20:200])
 set(gca, fontsize=18)
 
 
@@ -188,7 +209,11 @@ MPSLTable = table(selected_z',selected_MPSL', ...
     'VariableNames',{'RemovedBits','MPSL'});
 disp(MPSLTable);
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Truncated sequences: seed
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 z_fixed = 23;
 primitivePolynomial = [10 9 4 1 0];
 

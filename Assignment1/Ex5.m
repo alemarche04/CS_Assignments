@@ -1,7 +1,12 @@
 clc
 clear
 close all;
-%% code parameters
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 5a.1: Code parameters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 m = 6;
 n = 2^m -1; k = 57; r = n - k;
 
@@ -13,7 +18,11 @@ t = 1; % error correction capability
 
 HT = H';
 
-%% word error probability
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 5a.2: Word error probability
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 p = logspace(-5, -0.5, 100);
 P_c = zeros(size(p)); % probability of correct decoding
 
@@ -34,7 +43,9 @@ axis tight
 set(gca, "FontSize", 22)
 
 
-%% bounded-distance syndrome decoder
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 5a.5: Bounded-distance syndrome decoder
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % construct Syndrome Lookup Table for Radius t = 1
 % map 6-bit syndrome vector with corresponding 63-bit error vector e
@@ -116,7 +127,11 @@ for j = 1:length(p_vec)
     % CI_high1(j) = betainv(1-alpha/2, r+1, f);
 end
 
-% plotting & Performance Comparison
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 5a.6: Comparison between analytical and simulated curve
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 figure;
 loglog(p, P_w, 'b-', 'LineWidth', 2);
 hold on

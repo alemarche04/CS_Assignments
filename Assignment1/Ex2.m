@@ -1,4 +1,7 @@
-clear; clc; close all;
+clear
+clc
+close all
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 1. Choose a primitive binary polynomial p(D) of degree r
@@ -212,6 +215,8 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% auxiliary function
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function s = poly_str(c)
     L  = numel(c); % number of elements in c
     pw = (L-1:-1:0); % decreasing order
