@@ -89,6 +89,7 @@ figure;
 stem(0:n, A, 'filled', 'LineWidth', 1.5);
 xlabel('Hamming weight i', Interpreter='latex'); 
 ylabel('$A_i$', Interpreter='latex');
+title('Hamming Weight Distribution $A_i$ of the $(6,2)$ CRC Code ($g(D) = D^4 + D^3 + D^2 + 1$)', 'Interpreter', 'latex');
 set(gca, Fontsize = 20);
 grid on;
 

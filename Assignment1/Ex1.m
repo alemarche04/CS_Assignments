@@ -107,11 +107,12 @@ figure;
 loglog(p_ax, P_UE1, 'LineWidth', 1.5);
 hold on;
 loglog(p_ax, P_UE2, 'LineWidth', 1.5);
-
+title('Analytical Undetected Error Probability $P_{UE}(p)$: Code $G_1$ vs. Code $G_2$', 'Interpreter', 'latex');
 grid on;
-xlabel('BSC crossover probability p'); ylabel('P_{UE}(p)');
-legend('Code G_1','Code G_2','Location','northwest');
-set(gca, 'FontSize', 15);
+xlabel('BSC crossover probability p', 'Interpreter', 'latex'); 
+ylabel('$P_{UE}(p)$', 'Interpreter', 'latex');
+legend('Code $G_1$','Code $G_2$','Location','northwest', 'Interpreter', 'latex');
+set(gca, 'FontSize', 18);
 
 
 % Leading terms for small p:
@@ -128,14 +129,14 @@ loglog(p_ax, P_UE1, 'b-', 'LineWidth', 1.5);
 hold on;
 loglog(p_ax, PUE1_approx, 'c--', 'LineWidth', 1.5);
 loglog(p_ax, P_UE2, 'r-', 'LineWidth', 1.5);
-loglog(p_ax, PUE2_approx, 'm--', 'LineWidth', 1.5);
+loglog(p_ax, PUE2_approx, 'g--', 'LineWidth', 1.5);
 
 grid on;
-xlabel('BSC crossover probability p');
-ylabel('P_{UE}(p)');
-set(gca, 'FontSize', 15);
-legend('Code G_1', 'G_1: A_{1, min} * p^{d_{1, min}}', 'Code G_2', 'G_2: A_{2, min} * p^{d_{2, min}}', 'Location', 'northwest');
-
+xlabel('BSC crossover probability p', 'Interpreter', 'latex');
+ylabel('$P_{UE}(p)$', 'Interpreter', 'latex');
+set(gca, 'FontSize', 18);
+title('Exact $P_{UE}(p)$ vs. Leading-Term Asymptotic Approximations ($A_{min} p^{d_{min}}$)', 'Interpreter', 'latex');
+legend('Code $G_1$', '$G_1$: $A_{1, min} \cdot p^{d_{1, min}}$', 'Code $G_2$', '$G_2$: $A_{2, min} \cdot p^{d_{2, min}}$', 'Location', 'northwest', 'Interpreter', 'latex');
 fprintf('\nG1 leading term for small p: PUE1 ~= %d * p^%d\n', Amin1,dmin1);
 fprintf('G2 leading term for small p: PUE2 ~= %d * p^%d\n', Amin2,dmin2);
 
@@ -293,10 +294,11 @@ for j = 1:length(target)
     loglog(p_MC, P_UE_MC(j,:), 'o-', 'LineWidth', 1.5);
 end
 grid on;
-xlabel('BSC crossover probability p'); ylabel('P_{UE}(p)');
-legend('Analytical', 'Monte Carlo: 10 UE', 'Monte Carlo: 100 UE', 'Location', 'northwest');
+title('Analytical vs. Monte Carlo $P_{UE}(p)$ for Code $G_1$ ($10$ vs. $100$ Undetected Errors)', 'Interpreter', 'latex');
+xlabel('BSC crossover probability p', 'Interpreter', 'latex'); ylabel('$P_{UE}(p)$', 'Interpreter', 'latex');
+legend('Analytical', 'Monte Carlo: 10 UE', 'Monte Carlo: 100 UE', 'Location', 'northwest', 'Interpreter', 'latex');
 xlim([min(p_MC), max(p_MC)]);
-set(gca, 'FontSize', 15);
+set(gca, 'FontSize', 18);
 
 
 figure;
@@ -315,16 +317,16 @@ for j = 1:length(target)
 end
 
 grid on;
-xlabel('BSC crossover probability p');
-ylabel('P_{UE}(p)');
+xlabel('BSC crossover probability p', 'Interpreter', 'latex');
+ylabel('$P_{UE}(p)$', 'Interpreter', 'latex');
 
 legend('Analytical', ...
        'Monte Carlo: 10 UE', ...
        'Monte Carlo: 100 UE', ...
-       'Location', 'northwest');
-
+       'Location', 'northwest', 'Interpreter', 'latex');
+title('Analytical vs. Monte Carlo $P_{UE}(p)$ with $95\%$ Confidence Intervals', 'Interpreter', 'latex');
 xlim([min(p_MC), max(p_MC)]);
-set(gca, 'FontSize', 15);
+set(gca, 'FontSize', 18);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -380,8 +382,8 @@ loglog(p_ax_ARQ, 1 - P_COR_1, 'LineWidth', 1.5);
 hold on;
 semilogx(p_ax_ARQ, 1 - P_COR_2, 'LineWidth', 1.5);
 semilogx(p_ax_ARQ, 1 - P_COR_3, 'LineWidth', 1.5);
-
+title('ARQ Failure Probability $1 - P(\mathrm{COR}, i)$ vs. Maximum Transmissions $i$ (Code $G_1$)', 'Interpreter', 'latex');
 grid on;
-xlabel('BSC crossover probability p'); ylabel('1 - P(COR, i) (error probability)');
-legend('i = 1','i = 2','i = 3','Location','northwest');
-set(gca, 'FontSize', 15);
+xlabel('BSC crossover probability p', 'Interpreter', 'latex'); ylabel('$1 - P(COR, i)$ (error probability)', 'Interpreter', 'latex');
+legend('$i = 1$','$i = 2$','$i = 3$','Location','northwest', 'Interpreter', 'latex');
+set(gca, 'FontSize', 18);

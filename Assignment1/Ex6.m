@@ -35,7 +35,10 @@ figure
 % stem(0:19, x1_(1:20), 'filled')
 stairs(0:20, x1_(1:21), LineWidth=1.5)
 grid on; 
+xlabel('Bit index $n$', 'Interpreter', 'latex')
+ylabel('$bipolar sequence v''[n]$', 'Interpreter', 'latex')
 ylim([-2 2]); yticks([-1 0 1]); yticklabels([-1 0 1])
+title('First $20$ Bits of the Bipolar $m$-Sequence', 'Interpreter', 'latex');
 xticks(0:20); xticklabels(0:20)
 set(gca, fontsize = 18)
 
@@ -136,9 +139,10 @@ stem(runStarts(is_one), runLengths(is_one), 'm', 'LineWidth', 1.2, ...
     'Marker', '.', 'MarkerSize', 8, 'DisplayName', 'Runs of 1s');
 
 grid on;
-xlabel('Starting position in the sequence');
-ylabel('Run length');
-legend('Location', 'northeast');
+title('Run Lengths vs. Starting Position for $m$-Sequence', 'Interpreter', 'latex');
+xlabel('Starting position in the sequence', 'Interpreter', 'latex');
+ylabel('Run length', 'Interpreter', 'latex');
+legend('Location', 'northeast', 'Interpreter', 'latex');
 xlim([0, N + 10]);
 ylim([0, max(runLengths) + 1]);
 set(gca, fontsize=18)
@@ -157,8 +161,9 @@ tau_axis = -(N-1)/2 : (N-1)/2;
 figure;
 plot(tau_axis, R, 'LineWidth', 1.5);
 grid on;
-xlabel('\tau');
-ylabel('R_{v''}(\tau)');
+xlabel('$\tau$', 'Interpreter', 'latex');
+ylabel('$R_{v''}(\tau)$', 'Interpreter', 'latex');
+title('Periodic Autocorrelation Function $R_{v''}(\tau)$ of the $m$-Sequence', 'Interpreter', 'latex');
 xlim([-(N-1)/2, (N-1)/2]);
 ylim([-50 1100]);
 set(gca, fontsize=18)
@@ -194,8 +199,9 @@ end
 % plot MPSL vs z
 figure;
 plot(z_values,MPSL, '.-', 'LineWidth', 1.2, 'MarkerSize', 15);
-xlabel('z');
-ylabel('MPSL(z)');
+xlabel('$z$', 'Interpreter', 'latex');
+ylabel('$\mathrm{MPSL}(z)$', 'Interpreter', 'latex');
+title('Maximum Peak Side Lobe $\mathrm{MPSL}(z)$ vs. Number of Removed Bits $z$', 'Interpreter', 'latex');
 grid on; axis tight;
 ylim([29 37]);
 xticks([1 20:20:200])
@@ -252,7 +258,7 @@ set(gca, fontsize=22)
 subplot(2,1,2);
 plot(lags, R_trunc_B, 'm-', 'LineWidth', 1.5);
 grid on;
-title("$R_{v'_z}(\tau)$ ($z = 23$, Seed B: [0000010110]))", 'Interpreter','latex');
+title("$R_{v'_z}(\tau)$ ($z = 23$, Seed B: [0000010110])", 'Interpreter','latex');
 xlabel('$\tau$', 'Interpreter','latex'); ylabel("$R_{v'_z}(\tau)$", 'Interpreter','latex');
 ylim([-100 1050]);
 set(gca, fontsize=22)

@@ -35,10 +35,10 @@ P_w = 1 - P_c; % probability of a codeword error
 % P_w = 1 - (1 - p).^63 - 63*p.*(1 - p).^62;
 
 figure;
-loglog(p, P_w, 'LineWidth', 1.5); grid on;
+loglog(p, P_w, '-b', 'LineWidth', 2); grid on;
 xlabel('$p$', 'Interpreter','latex')
 ylabel('$P_w(E)$', 'Interpreter','latex')
-% title('Word error probability');
+title('Analytical Word Error Probability $P_w(E)$ for Hamming $(63, 57)$ Code', 'Interpreter', 'latex');
 axis tight
 set(gca, "FontSize", 22)
 
@@ -63,31 +63,17 @@ for i = 1:n
     syndrome_table(char('0' + s)) = e_single;
 end
 
-% analytical Codeword Error Probability
 p_vec = logspace(-2, -0.5, 10); % range of channel bit error probabilities p
-P_w_analytical = zeros(size(p_vec));
-
-for idx = 1:length(p_vec)
-    p_val = p_vec(idx);
-    P_correct = 0;
-    for i = 0:t
-        P_correct = P_correct + nchoosek(n, i) * (p_val^i) * ((1 - p_val)^(n - i));
-    end
-    P_w_analytical(idx) = 1 - P_correct;
-end
 
 % Monte Carlo simulation of Bounded-Distance Syndrome Decoder
 rng(22); % reproducibility
 target_errors = 100;
-alpha = 0.05; % parameter for confidence intervals
 
 P_w_sim     = zeros(size(p_vec));
-CI_low1     = zeros(1, length(p_vec));
-CI_high1    = zeros(1, length(p_vec));
 
 for j = 1:length(p_vec)
     p_val = p_vec(j);
-    word_errors = 0;
+    
     N_WE = 0; N_trans = 0;
     while N_WE < target_errors
         % transmit zero codeword
@@ -121,10 +107,6 @@ for j = 1:length(p_vec)
     end
 
     P_w_sim(j) = N_WE / N_trans;
-
-    % r = N_WE; f = N_trans - N_WE;
-    % CI_low1(j)  = betainv(alpha/2, r, f+1);
-    % CI_high1(j) = betainv(1-alpha/2, r+1, f);
 end
 
 
@@ -135,13 +117,11 @@ end
 figure;
 loglog(p, P_w, 'b-', 'LineWidth', 2);
 hold on
-% errorbar(p_vec, P_w_sim, P_w_sim - CI_low1, CI_high1 - P_w_sim, '-ro', ...
-%     'LineWidth', 1.5, 'MarkerSize', 8, 'MarkerFaceColor', 'r');
 plot(p_vec, P_w_sim, 'r-o','LineWidth', 1.5, 'MarkerSize', 8, 'MarkerFaceColor', 'r')
 hold off
 grid on; axis tight;
-xlabel('BSC crossover probability p', 'Interpreter', 'latex');
+xlabel('BSC crossover probability $p$', 'Interpreter', 'latex');
 ylabel('$P_w(E)$', 'Interpreter', 'latex');
-%title('Hamming (63,57) Syndrome Decoding Performance');
+title('Analytical vs. Simulated $P_w(E)$ for Hamming $(63, 57)$ Syndrome Decoder', 'Interpreter', 'latex');
 legend('Analytical $P_w(E)$', 'Monte Carlo (100 word errors)', 'Interpreter', 'latex', 'Location', 'southeast');
 set(gca, 'FontSize', 22);
