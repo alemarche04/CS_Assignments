@@ -271,8 +271,8 @@ for j = 1:length(target)
         % 95% confidence interval for the stopping rule
         alpha = 0.05;
 
-        r = N_UE;
-        f = N_trans - N_UE;
+        r = N_UE; % k
+        f = N_trans - N_UE; % n-k
 
         % exact Clopper-Pearson 95% confidence bounds (alpha = 0.05) are 
         % calculated using the inverse Beta cumulative distribution 
