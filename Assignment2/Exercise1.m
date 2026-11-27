@@ -25,12 +25,13 @@ goldseq = comm.GoldSequence('FirstPolynomial',p1, ...
 x1  = goldseq()';
 x1b = 1 - 2*x1; % bipolar sequence
 
+
 % cyclic autocorrelation
 R1 = zeros(1, L);
-
 for tau = 0:L-1
     R1(tau+1) = sum(x1b .* circshift(x1b, -tau)); 
 end
+
 
 % plot
 figure
@@ -53,12 +54,13 @@ goldseq = comm.GoldSequence('FirstPolynomial',p1, ...
 x1_neg  = goldseq()';
 x1b_neg = 1 - 2*x1_neg; % bipolar sequence
 
+
 % cyclic autocorrelation
 R1_neg = zeros(1, L);
-
 for tau = 0:L-1
     R1_neg(tau+1) = sum(x1b_neg .* circshift(x1b_neg, -tau)); 
 end
+
 
 % plot
 figure;
@@ -80,12 +82,13 @@ goldseq = comm.GoldSequence('FirstPolynomial',p1, ...
 x2_neg  = goldseq()';
 x2b_neg = 1 - 2*x2_neg; % bipolar sequence
 
+
 % cyclic autocorrelation
 R2_neg = zeros(1, L);
-
 for tau = 0:L-1
     R2_neg(tau+1) = sum(x2b_neg .* circshift(x2b_neg, -tau)); 
 end
+
 
 % plot
 figure;
@@ -101,6 +104,9 @@ set(gca, fontsize = 18)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+m = 7;
+L = 2^m - 1;
 
 indexes = randperm(L, 2) - 1;
 
@@ -135,10 +141,10 @@ x2b = 1 - 2*x2;
 
 % cyclic cross-correlation
 CC = zeros(1, L);
-
 for tau = 0:L-1
     CC(tau+1) = sum(x1b .* circshift(x2b, -tau)); 
 end
+
 
 % plot
 figure;
@@ -176,10 +182,10 @@ u2b = 1 - 2*u2;
 
 % cyclic cross-correlation
 CC = zeros(1, L);
-
 for tau = 0:L-1
     CC(tau+1) = sum(u1b .* circshift(u2b, -tau)); 
 end
+
 
 % plot
 figure;
@@ -196,68 +202,16 @@ set(gca, fontsize = 18)
 %% Part 3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+m = 7;
+L = 2^m - 1;
+K = 2^m + 1;
+
 % calculate the Welch bound
 Kvalues = 1:200;
-
-Welch_general = zeros(size(Kvalues));
-Welch_simple = zeros(size(Kvalues));
-Welch_approx = zeros(size(Kvalues));
-
-for k = 1:length(Kvalues)
-
-    Kv = Kvalues(k);
-
-    % general Welch bound for s = 1,...,10
-    values = zeros(1,10);
-
-    for s = 1:10
-
-        argument = (1/(Kv*L-1)) * ...
-            (Kv*L/nchoosek(L+s-1,s) - 1);
-
-        argument = max(0,argument);
-
-        values(s) = L*argument^(1/(2*s));
-
-    end
-
-    Welch_general(k) = ceil(max(values));
-
-    % simplified Welch bound (s = 1)
-    Welch_simple(k) = ceil( ...
-        L*sqrt((Kv-1)/(Kv*L-1)));
-
-    % large K approximation
-    Welch_approx(k) = ceil(sqrt(L));
-
-end
+[Welch_general, Welch_simple, Welch_approx] = WelchBounds(L, Kvalues);
 
 % calculate the Sidelnikov bound
-
-Sidelnikov = zeros(size(Kvalues));
-
-for k = 1:length(Kvalues)
-
-    Kv = Kvalues(k);
-
-    values = zeros(1,11);
-
-    for s = 0:10
-
-        argument = (2*s+1)*(L-s) + ...
-            s*(s+1)/2 - ...
-            (2^s * L^(2*s+1)) / ...
-            (Kv*factorial(2*s)*nchoosek(L,s));
-
-        argument = max(0,argument);
-
-        values(s+1) = sqrt(argument);
-
-    end
-
-    Sidelnikov(k) = ceil(max(values));
-
-end
+Sidelnikov = SidelnikovBounds(L, Kvalues);
 
 figure;
 hold on;
@@ -273,14 +227,13 @@ legend('Sidelnikov binary', ...
     'Interpreter','latex', ...
     'Location', 'southeast');
 grid on; ylim([0 20]);
+xlabel('$K$', 'Interpreter', 'latex')
 title('\textbf{Welch and Sidelnikov bounds (N = 127)}', 'Interpreter','latex')
 set(gca, fontsize = 18)
 
 
 
 % compute rM considering the entire set of K = 129 Gold sequences
-K = 129;
-
 Cb = zeros(K,L);
 
 % Gold sequence indexes: -2, -1, 0, ..., 126
@@ -307,34 +260,7 @@ for k = 1:K
 
 end
 
-% compute rA (maximal out-of-phase cyclic auto-correlation magnitude) 
-% and rC (maximal cyclic cross-correlation magnitude)
-
-rA = 0;
-rC = 0;
-
-for tau = 0:L-1
-
-    % cyclically shift all sequences
-    Cshift = circshift(Cb,[0 -tau]);
-
-    % cross-correlation matrix
-    R = Cb * Cshift';
-
-    % cross-correlation: different sequences
-    Rcross = abs(R);
-    Rcross(1:K+1:end) = 0;
-
-    rC = max(rC,max(Rcross(:)));
-
-    % autocorrelation: same sequence, nonzero shifts
-    if tau > 0
-        rA = max(rA,max(abs(diag(R))));
-    end
-
-end
-
-rM = max(rA,rC); % maximal cyclic correlation magnitude
+[rA, rC, rM] = CorrelationStatistics(Cb, L, K);
 
 fprintf('\n_____ Gold family correlation statistics _____\n');
 fprintf('rA = %d\n',rA);
@@ -359,14 +285,13 @@ legend('Sidelnikov binary', ...
     'Interpreter','latex', ...
     'Location', 'southeast');
 grid on; ylim([0 20]);
+xlabel('$K$', 'Interpreter', 'latex')
 title('\textbf{Welch and Sidelnikov bounds (N = 127)}', 'Interpreter','latex')
 set(gca, fontsize = 18)
 
 
 % Display results at K = 129
-
 fprintf('\n_____ Bounds at K = 129 _____\n');
-
 fprintf('Welch general = %d\n',Welch_general(129));
 fprintf('Welch simplified = %d\n',Welch_simple(129));
 fprintf('Welch approximation = %d\n',Welch_approx(129));
@@ -413,34 +338,8 @@ end
 % truncate sequences to length 126
 C126 = Cb(:, 1:N);
 
-% compute rA (maximal out-of-phase cyclic auto-correlation magnitude) 
-% and rC (maximal cyclic cross-correlation magnitude)
-
-rA = 0;
-rC = 0;
-
-for tau = 0:N-1
-
-    % cyclically shift all sequences
-    Cshift = circshift(C126,[0 -tau]);
-
-    % cross-correlation matrix
-    R = C126 * Cshift';
-
-    % cross-correlation: different sequences
-    Rcross = abs(R);
-    Rcross(1:K+1:end) = 0;
-
-    rC = max(rC,max(Rcross(:)));
-
-    % autocorrelation excluding zero shift
-    if tau > 0
-        rA = max(rA,max(abs(diag(R))));
-    end
-
-end
-
-rM = max(rA,rC); % maximal cyclic correlation magnitude
+% compute rA, rC and rM
+[rA, rC, rM] = CorrelationStatistics(C126, N, K);
 
 fprintf('\n_____ Truncated Gold family correlation statistics _____\n');
 fprintf('rA = %d\n',rA);
@@ -450,66 +349,10 @@ fprintf('rM = %d\n',rM);
 
 % calculate the Welch bound
 Kvalues = 1:200;
-
-Welch_general   = zeros(size(Kvalues));
-Welch_simple    = zeros(size(Kvalues));
-Welch_approx    = zeros(size(Kvalues));
-
-for k = 1:length(Kvalues)
-
-    Kv = Kvalues(k);
-
-    % general Welch bound for s = 1,...,10
-    values = zeros(1,10);
-
-    for s = 1:10
-
-        argument = (1/(Kv*N-1)) * ...
-            (Kv*N/nchoosek(N+s-1,s) - 1);
-
-        argument = max(0,argument);
-
-        values(s) = N*argument^(1/(2*s));
-
-    end
-
-    Welch_general(k) = ceil(max(values));
-
-    % simplified Welch bound (s = 1)
-    Welch_simple(k) = ceil( ...
-        N*sqrt((Kv-1)/(Kv*N-1)));
-
-    % large K approximation
-    Welch_approx(k) = ceil(sqrt(N));
-
-end
+[Welch_general, Welch_simple, Welch_approx] = WelchBounds(N, Kvalues);
 
 % calculate the Sidelnikov bound
-
-Sidelnikov = zeros(size(Kvalues));
-
-for k = 1:length(Kvalues)
-
-    Kv = Kvalues(k);
-
-    values = zeros(1,11);
-
-    for s = 0:10
-
-        argument = (2*s+1)*(N-s) + ...
-            s*(s+1)/2 - ...
-            (2^s * N^(2*s+1)) / ...
-            (Kv*factorial(2*s)*nchoosek(N,s));
-
-        argument = max(0,argument);
-
-        values(s+1) = sqrt(argument);
-
-    end
-
-    Sidelnikov(k) = ceil(max(values));
-
-end
+Sidelnikov = SidelnikovBounds(N, Kvalues);
 
 figure;
 hold on;
@@ -525,11 +368,11 @@ legend('Sidelnikov binary', ...
     'Interpreter','latex', ...
     'Location', 'southeast');
 grid on; ylim([0 20]);
+xlabel('$K$', 'Interpreter', 'latex')
 title('\textbf{Welch and Sidelnikov bounds (N = 126)}', 'Interpreter','latex')
 set(gca, fontsize = 18)
 
 fprintf('\n_____ Bounds at K = 129 _____\n');
-
 fprintf('Welch general = %d\n',Welch_general(129));
 fprintf('Welch simplified = %d\n',Welch_simple(129));
 fprintf('Welch approximation = %d\n',Welch_approx(129));
@@ -554,6 +397,7 @@ legend('Sidelnikov binary', ...
     'Interpreter','latex', ...
     'Location', 'northwest');
 grid on; ylim([0 50]);
+xlabel('$K$', 'Interpreter', 'latex')
 title('\textbf{Welch and Sidelnikov bounds (N = 126)}', 'Interpreter','latex')
 set(gca, fontsize = 18)
 
@@ -583,35 +427,8 @@ else
 end
 
 
-% compute rA (maximal out-of-phase cyclic auto-correlation magnitude) 
-% and rC (maximal cyclic cross-correlation magnitude)
-rA = 0;
-rC = 0;
-
-for tau = 0:N-1
-
-    % cyclically shift all rows
-    Hshift = circshift(H,[0 -tau]);
-
-    % cross-correlation matrix
-    R = H * Hshift';
-
-    % cross-correlation between different rows
-    Rcross = abs(R);
-
-    % remove diagonal (autocorrelation)
-    Rcross(1:K+1:end) = 0;
-
-    rC = max(rC,max(Rcross(:)));
-
-    % autocorrelation excluding zero shift
-    if tau > 0
-        rA = max(rA,max(abs(diag(R))));
-    end
-
-end
-
-rM = max(rA,rC); % maximal cyclic correlation magnitude
+% compute rA, rC and rM
+[rA, rC, rM] = CorrelationStatistics(H, N, K);
 
 fprintf('\n_____ Walsh-Hadamard correlation statistics _____\n');
 fprintf('rA = %d\n',rA);
@@ -621,69 +438,32 @@ fprintf('rM = %d\n',rM);
 
 % calculate the Welch bound
 Kvalues = 1:200;
-
-Welch_general   = zeros(size(Kvalues));
-Welch_simple    = zeros(size(Kvalues));
-Welch_approx    = zeros(size(Kvalues));
-
-for k = 1:length(Kvalues)
-
-    Kv = Kvalues(k);
-
-    % general Welch bound for s = 1,...,10
-    values = zeros(1,10);
-
-    for s = 1:10
-
-        argument = (1/(Kv*N-1)) * ...
-            (Kv*N/nchoosek(N+s-1,s) - 1);
-
-        argument = max(0,argument);
-
-        values(s) = N*argument^(1/(2*s));
-
-    end
-
-    Welch_general(k) = ceil(max(values));
-
-    % simplified Welch bound (s = 1)
-    Welch_simple(k) = ceil( ...
-        N*sqrt((Kv-1)/(Kv*N-1)));
-
-    % large K approximation
-    Welch_approx(k) = ceil(sqrt(N));
-
-end
+[Welch_general, Welch_simple, Welch_approx] = WelchBounds(N, Kvalues);
 
 % calculate the Sidelnikov bound
-
-Sidelnikov = zeros(size(Kvalues));
-
-for k = 1:length(Kvalues)
-
-    Kv = Kvalues(k);
-
-    values = zeros(1,11);
-
-    for s = 0:10
-
-        argument = (2*s+1)*(N-s) + ...
-            s*(s+1)/2 - ...
-            (2^s * N^(2*s+1)) / ...
-            (Kv*factorial(2*s)*nchoosek(N,s));
-
-        argument = max(0,argument);
-
-        values(s+1) = sqrt(argument);
-
-    end
-
-    Sidelnikov(k) = ceil(max(values));
-
-end
+Sidelnikov = SidelnikovBounds(N, Kvalues);
 
 
-% Add actual Gold family result
+% plot bounds 
+figure;
+hold on;
+plot(Kvalues,Sidelnikov,'r','LineWidth',1.5);
+plot(Kvalues,Welch_general,'b-o','LineWidth',1.5);
+plot(Kvalues,Welch_simple,'c','LineWidth',1.5);
+plot(Kvalues,Welch_approx,'k','LineWidth',1.5);
+hold off; 
+legend('Sidelnikov binary', ...
+    'Welch original', ...
+    'Welch simplified formula', ...
+    'Welch approximation', ...
+    'Interpreter','latex', ...
+    'Location', 'northwest');
+grid on; ylim([0 20]); 
+xlabel('$K$', 'Interpreter', 'latex')
+title('\textbf{Welch and Sidelnikov bounds (N = 128)}', 'Interpreter','latex')
+set(gca, fontsize = 18)
+
+% add rM to the plot
 figure;
 hold on;
 plot(Kvalues,Sidelnikov,'r','LineWidth',1.5);
@@ -696,35 +476,136 @@ legend('Sidelnikov binary', ...
     'Welch original', ...
     'Welch simplified formula', ...
     'Welch approximation', ...
-    'Gold family $r_M$', ...
+    'Walsh-Hadamard $r_M$', ...
     'Interpreter','latex', ...
     'Location', 'northwest');
-grid on; ylim([0 130]);
+grid on; ylim([0 130]); 
+xlabel('$K$', 'Interpreter', 'latex')
 title('\textbf{Welch and Sidelnikov bounds (N = 128)}', 'Interpreter','latex')
 set(gca, fontsize = 18)
 
 
 % Display results at K = 128
-
-fprintf('\n_____ Bounds at K = 129 _____\n');
-
+fprintf('\n_____ Bounds at K = 128 _____\n');
 fprintf('Welch general = %d\n',Welch_general(128));
 fprintf('Welch simplified = %d\n',Welch_simple(128));
 fprintf('Welch approximation = %d\n',Welch_approx(128));
 fprintf('Sidelnikov = %d\n',Sidelnikov(128));
-fprintf('Actual Gold rM = %d\n',rM);
+fprintf('Actual Walsh-Hadamard rM = %d\n',rM);
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Cyclic cross-correlation function
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Compute Welch bounds function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+function [Welch_general, Welch_simple, Welch_approx] = WelchBounds(N, Kvalues)
+
+    Welch_general   = zeros(size(Kvalues));
+    Welch_simple    = zeros(size(Kvalues));
+    Welch_approx    = zeros(size(Kvalues));
+    
+    for k = 1:length(Kvalues)
+    
+        Kv = Kvalues(k);
+    
+        % general Welch bound for s = 1,...,10
+        values = zeros(1,10);
+    
+        for s = 1:10
+    
+            argument = (1/(Kv*N-1)) * ...
+                (Kv*N/nchoosek(N+s-1,s) - 1);
+    
+            argument = max(0,argument);
+    
+            values(s) = N*argument^(1/(2*s));
+    
+        end
+    
+        Welch_general(k) = ceil(max(values));
+    
+        % simplified Welch bound (s = 1)
+        Welch_simple(k) = ceil( ...
+            N*sqrt((Kv-1)/(Kv*N-1)));
+    
+        % large K approximation
+        Welch_approx(k) = ceil(sqrt(N));
+    
+    end
+end
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Compute Sidelnikov bound function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [Sidelnikov] = SidelnikovBounds(N, Kvalues)
+
+    Sidelnikov = zeros(size(Kvalues));
+    
+    for k = 1:length(Kvalues)
+    
+        Kv = Kvalues(k);
+    
+        values = zeros(1,11);
+    
+        for s = 0:10
+    
+            argument = (2*s+1)*(N-s) + ...
+                s*(s+1)/2 - ...
+                (2^s * N^(2*s+1)) / ...
+                (Kv*factorial(2*s)*nchoosek(N,s));
+    
+            argument = max(0,argument);
+    
+            values(s+1) = sqrt(argument);
+    
+        end
+    
+        Sidelnikov(k) = ceil(max(values));
+    
+    end
+
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Compute correlation statistics
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [rA, rC, rM] = CorrelationStatistics(M, N, K)
+
+    % compute rA (maximal out-of-phase cyclic auto-correlation magnitude) 
+    % and rC (maximal cyclic cross-correlation magnitude)
+    rA = 0;
+    rC = 0;
+    
+    for tau = 0:N-1
+    
+        % cyclically shift all rows
+        Mshift = circshift(M,[0 -tau]);
+    
+        % cross-correlation matrix
+        R = M * Mshift';
+    
+        % cross-correlation between different rows
+        Rcross = abs(R);
+    
+        % remove diagonal (autocorrelation)
+        Rcross(1:K+1:end) = 0;
+    
+        rC = max(rC,max(Rcross(:)));
+    
+        % autocorrelation excluding zero shift
+        if tau > 0
+            rA = max(rA,max(abs(diag(R))));
+        end
+    
+    end
+    
+    rM = max(rA,rC); % maximal cyclic correlation magnitude
+end
